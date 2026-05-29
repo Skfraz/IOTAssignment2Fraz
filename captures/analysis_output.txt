@@ -1,0 +1,78 @@
+======================================================================
+MQTT PACKET ANALYSIS  ( 125 frames )
+======================================================================
+--- CONNECT ---
+raw: 10 45 00 04 4D 51 54 54 04 2C 00 3C 00 1A 73 6D 61 72 74 66 61 63 74 6F 72 79 2D 70 75 62 6C 69 73 68 65 72 2D 30 30 31 00 14 66 61 63 74 6F 72 79 2F 6C 69 6E 65 31 2F 73 74 61 74 75 73 00 07 6F 66 66 6C 69 6E 65
+byte0 = 0x10  type=1 (CONNECT)  flags=0000
+remaining length byte = 0x45 = 69
+protocol name length = 00 04 = 4
+protocol name = 4D 51 54 54 = 'MQTT'
+protocol version = 0x04 = 4 (MQTT 3.1.1)
+connect flags = 0x2C = 00101100
+    bit7 username   = 0
+    bit6 password   = 0
+    bit5 will retain= 1
+    bit4-3 will QoS = 1
+    bit2 will flag  = 1
+    bit1 clean sess = 0
+    bit0 reserved   = 0
+keep-alive = 00 3C = 60 s
+client id length = 26
+client id = 'smartfactory-publisher-001'
+--- PUBLISH (QoS 1) ---
+raw: 32 A0 01 00 19 66 61 63 74 6F 72 79 2F 6C 69 6E 65 31 2F 74 65 6D 70 65 72 61 74 75 72 65 00 03 7B 22 6C 69 6E 65 22 3A ...
+byte0 = 0x32 = 00110010
+    type bits7-4 = 0011 = PUBLISH(3)
+    DUP  bit3    = 0
+    QoS  bit2-1  = 01 = QoS 1
+    RETAIN bit0  = 0
+remaining length = A0 01 (varint, 2 byte(s))
+topic length = 00 19 = 25
+topic = 'factory/line1/temperature'
+packet identifier = 00 03 = 3
+payload (131 B) = '{"line": "line1", "sensor": "temperature", "value": 72.606, "unit": "C", "timestamp": "2026-05-29T00:53:40.618958+00:00", "seq": 1}'
+--- PUBACK ---
+raw: 40 02 00 03
+byte0 = 0x40  type=4 (PUBACK)
+remaining length = 2
+packet identifier = 00 03 = 3
+======================================================================
+CoAP PACKET ANALYSIS  ( 6 datagrams )
+======================================================================
+--- CON GET request ---
+raw: 42 01 7A 04 54 C3 B7 66 61 63 74 6F 72 79 05 6C 69 6E 65 31 0B 74 65 6D 70 65 72 61 74 75 72 65 
+byte0 = 0x42 = 01000010
+    Ver  bits7-6 = 01 = 1
+    Type bits5-4 = 00 = CON
+    TKL  bits3-0 = 0010 = 2
+byte1 code = 0x01 = 0.01
+message id = 7A 04 = 31236
+token = 54 C3  (len 2)
+option #11 Uri-Path: delta=11 len=7 value=factory
+option #11 Uri-Path: delta=0 len=5 value=line1
+option #11 Uri-Path: delta=0 len=11 value=temperature
+--- ACK 2.05 Content response ---
+raw: 62 45 7A 04 54 C3 C1 32 FF 7B 22 76 61 6C 75 65 22 3A 20 37 36 2E 31 31 36 2C 20 22 75 6E 69 74 22 3A 20 22 43 22 2C 20 22 74 73 22 3A 20 22 32 ...
+byte0 = 0x62 = 01100010
+    Ver  bits7-6 = 01 = 1
+    Type bits5-4 = 10 = ACK
+    TKL  bits3-0 = 0010 = 2
+byte1 code = 0x45 = 2.05
+message id = 7A 04 = 31236
+token = 54 C3  (len 2)
+option #12 Content-Format: delta=12 len=1 value=32  (Content-Format = 50)
+payload marker 0xFF, payload (72 B) = '{"value": 76.116, "unit": "C", "ts": "2026-05-29T00:44:56.34'
+--- Observe notification ---
+raw: 62 45 7A 05 54 C4 60 61 32 FF 7B 22 76 61 6C 75 65 22 3A 20 37 36 2E 31 31 36 2C 20 22 75 6E 69 74 22 3A 20 22 43 22 2C 20 22 74 73 22 3A 20 22 ...
+byte0 = 0x62 = 01100010
+    Ver  bits7-6 = 01 = 1
+    Type bits5-4 = 10 = ACK
+    TKL  bits3-0 = 0010 = 2
+byte1 code = 0x45 = 2.05
+message id = 7A 05 = 31237
+token = 54 C4  (len 2)
+option #6 Observe: delta=6 len=0 value=  (Observe seq = 0)
+option #12 Content-Format: delta=6 len=1 value=32  (Content-Format = 50)
+payload marker 0xFF, payload (72 B) = '{"value": 76.116, "unit": "C", "ts": "2026-05-29T00:44:56.34'
+Token match (request vs response): True (54 C3 vs 54 C3)
+Message-ID match: True (31236 vs 31236)
